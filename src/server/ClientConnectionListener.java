@@ -18,11 +18,13 @@ public class ClientConnectionListener implements Runnable {
 
     ServerSocket server;
     String password;
+    ServerManager serverManager;
     
-    public ClientConnectionListener(ServerSocket server,String password)
+    public ClientConnectionListener(ServerSocket server,String password, ServerManager serverManager)
     {
         this.server = server;
         this.password = password;
+        this.serverManager = serverManager;
     }
     
     public void run()
@@ -43,18 +45,57 @@ public class ClientConnectionListener implements Runnable {
             Socket socket = server.accept();                       
             System.out.println("Got connection request from client " + socket.getInetAddress().getHostAddress() + " , Name: " + socket.getInetAddress().getHostName() );
             
-            DataInputStream dis = new DataInputStream(socket.getInputStream()); //Input Stream            
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream()); //Output Stream
+            DataInputStream inputStream = new DataInputStream(socket.getInputStream()); //Input Stream            
+            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream()); //Output Stream
             
-            String userPass = dis.readUTF();
+            String userPass = inputStream.readUTF();
             
             if(password.equals(userPass))
             {
-                dos.writeUTF("Login successful");
+                outputStream.writeUTF("Login successful");
+                
+                //Add the client to the list of Active Clients
+                ActiveClientsInfo info = new ActiveClientsInfo();
+                info.addClient(socket, outputStream);
+                
+                //Call the method of ServerManager which displays the infomration of the connected client on the form
+                serverManager.displayClient(socket);
+                
+                //Start another thread which listens for a client connection
+                ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
+                Thread thread = new Thread(connection);    
+                thread.start();
+                
+                
+                //Server side dispatching logic
+                String input;
+                int pos=0;
+                while(true)
+                {
+                    input = inputStream.readUTF();
+
+                    if(!(input.startsWith("!DELETE!")))
+                        pos = inputStream.readInt();
+
+                    if(input.equals("~"))
+                        break;
+                    else
+                    {
+                        for(DataOutputStream d: info.getWritingStreams())
+                        {
+                            if(d!=outputStream)
+                            {
+                                d.writeUTF(input);       
+                                if(!(input.startsWith("!DELETE!")))
+                                    d.writeInt(pos);
+                            }
+                        }
+                    }
+                }                                        
             }
             else
             {
-                dos.writeUTF("Login Failed");
+                outputStream.writeUTF("Login Failed");
             }
             
                                               

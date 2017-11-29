@@ -6,6 +6,7 @@
 package server;
 
 import java.net.ServerSocket;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
 
@@ -38,7 +39,7 @@ public class Engine extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Y-NOT Server Engine");
+        setTitle("Y-NOT Editor Server Engine");
         setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
@@ -106,11 +107,17 @@ public class Engine extends javax.swing.JFrame {
         try
         {
             server = new ServerSocket(port);            
-            JOptionPane.showMessageDialog(rootPane, "Server successfully started at PORT No. " + port + " on " + new Date(), "Y-NOT Editor", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(rootPane, "Server successfully started at PORT No. " + port + " on " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").format(new Date()), "Y-NOT Editor", JOptionPane.INFORMATION_MESSAGE);
                 
-            ClientConnectionListener connection = new ClientConnectionListener(server, password);
+            //Open the Server Manager form and pass the instance of the server manager to ClentConnectionListener
+            ServerManager serverManager = new ServerManager();
+            serverManager.initServerDetails(port,server);
+            serverManager.setVisible(true);
+
+            ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
             Thread thread = new Thread(connection);    
             thread.start();
+            
             
             this.dispose();
         }
