@@ -82,7 +82,7 @@ public class ServerManager extends javax.swing.JFrame {
 
         lstActiveClients.setBackground(new java.awt.Color(255, 255, 204));
         lstActiveClients.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
-        lstActiveClients.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lstActiveClients.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lstActiveClients.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstActiveClients.setToolTipText("List of active clients");
         lstActiveClients.setEnabled(false);
@@ -211,103 +211,113 @@ public class ServerManager extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
-        //Send a message to every active client about the shutting down of server
-        ArrayList<DataOutputStream> outputStreams = new ArrayList<DataOutputStream>();
-        ActiveClientsInfo info = new ActiveClientsInfo();
-        outputStreams = info.getWritingStreams();
-        
-        try
+        int dialogResponse = JOptionPane.showConfirmDialog(rootPane, "Are you sure you want to stop the server ?","Y-NOT Editor Server Manager",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+        if(dialogResponse==JOptionPane.YES_OPTION)
         {
-            for(DataOutputStream dos: outputStreams)
+        
+            //Send a message to every active client about the shutting down of server
+            ArrayList<DataOutputStream> outputStreams = new ArrayList<DataOutputStream>();
+            ActiveClientsInfo info = new ActiveClientsInfo();
+            outputStreams = info.getWritingStreams();
+
+            try
             {
-                dos.writeUTF("!SERVER SHUT DOWN!");
+                for(DataOutputStream dos: outputStreams)
+                {
+                    dos.writeUTF("!SERVER SHUT DOWN!");
+                }
+
+                server.close();           
+                JOptionPane.showMessageDialog(rootPane, "Server Shut Down successful","Y-NOT Editor Server Manager",JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
             }
-        
-            server.close();           
-            JOptionPane.showMessageDialog(rootPane, "Server Shut Down successful","Y-NOT Editor Server Manager",JOptionPane.INFORMATION_MESSAGE);
-            this.dispose();
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(rootPane, "Some Error occurred while shutting down the server", "Y-NOT Editor Server Manager", JOptionPane.ERROR_MESSAGE);            
-        }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(rootPane, "Some Error occurred while shutting down the server", "Y-NOT Editor Server Manager", JOptionPane.ERROR_MESSAGE);            
+            }
+        }    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
-        String deleteHost = (String) cmbClients.getSelectedItem();
-        System.out.println(deleteHost);
-        ActiveClientsInfo info = new ActiveClientsInfo();
-        ArrayList<Socket> sockets = info.getClientConnections();
-        ArrayList<DataOutputStream> writingStreams = info.getWritingStreams();
-        ArrayList<Thread> activeThreads = info.getActiveClientThreads();
-        DataOutputStream dos=null;
-        if(deleteHost.equals(""))
+        int dialogResponse = JOptionPane.showConfirmDialog(rootPane, "Are you sure you want to delete this client?","Y-NOT Editor Server Manager",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+        if(dialogResponse==JOptionPane.YES_OPTION)
         {
-            JOptionPane.showMessageDialog(rootPane, "Please select a Client which has to be removed","Y-NOT Editor Server Manager",JOptionPane.ERROR_MESSAGE);            
-        }
-        else
-        {            
-            //Find the socket connection in the list of active clients        
-            for(Socket s: sockets)
+
+            String deleteHost = (String) cmbClients.getSelectedItem();
+            System.out.println(deleteHost);
+            ActiveClientsInfo info = new ActiveClientsInfo();
+            ArrayList<Socket> sockets = info.getClientConnections();
+            ArrayList<DataOutputStream> writingStreams = info.getWritingStreams();
+            ArrayList<Thread> activeThreads = info.getActiveClientThreads();
+            DataOutputStream dos=null;
+            if(deleteHost.equals(""))
             {
-                if(s.getInetAddress().getHostAddress().equals(deleteHost))
+                JOptionPane.showMessageDialog(rootPane, "Please select a Client which has to be removed","Y-NOT Editor Server Manager",JOptionPane.ERROR_MESSAGE);            
+            }
+            else
+            {            
+                //Find the socket connection in the list of active clients        
+                for(Socket s: sockets)
                 {
-                    System.out.println();
-                    try
-                    {       
-                                                                        
-                        //Remove the Thread corresponding to the socket connection
-                        for(Thread thread:activeThreads)
-                        {
-                            if(thread.equals(activeThreads.get(sockets.indexOf(s))))
-                            {
-                                System.out.println("Found the thread");
-                                thread.interrupt();
-                            }                                                                                    
-                        }                                                                       
-                        
-                        //Remove the DataOutputStream corresponding to the socket
-                        for(DataOutputStream d: writingStreams)
-                        {                            
-                            if(d.equals(writingStreams.get(sockets.indexOf(s))))
-                            {
-                                dos = d;
-                            }
-                        }
-                        //Send a goodbye message to the client
-                        dos.writeUTF("!REMOVED BY SERVER!");
-
-                        //Close and Remove the DataOutputStream from the main Array List corresponding to this socket
-                        dos.close();
-                        writingStreams.remove(dos);                    
-
-                        //For Log
-                        System.out.println("Successfully removed client " + s.getInetAddress().getHostAddress() + " -> " + s.getInetAddress().getHostName());
-
-                        //Deleted Index
-                        deletedIndex = sockets.indexOf(s);
-                        
-                        //Now close and remove the Socket from the main Array List
-                        s.close();                    
-                        sockets.remove(s);
-
-                        //Decrement the value of client count
-                        --clientCount;
-                                                
-                        //Update the List
-                        updateClientList(deletedIndex);
-                        
-                    }
-                    catch(Exception e)
+                    if(s.getInetAddress().getHostAddress().equals(deleteHost))
                     {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(rootPane, "Some error occurrred while removing the client","Y-NOT Editor Server Manager",JOptionPane.ERROR_MESSAGE);
+                        System.out.println();
+                        try
+                        {       
+
+                            //Remove the Thread corresponding to the socket connection
+                            for(Thread thread:activeThreads)
+                            {
+                                if(thread.equals(activeThreads.get(sockets.indexOf(s))))
+                                {
+                                    System.out.println("Found the thread");
+                                    thread.interrupt();
+                                }                                                                                    
+                            }                                                                       
+
+                            //Remove the DataOutputStream corresponding to the socket
+                            for(DataOutputStream d: writingStreams)
+                            {                            
+                                if(d.equals(writingStreams.get(sockets.indexOf(s))))
+                                {
+                                    dos = d;
+                                }
+                            }
+                            //Send a goodbye message to the client
+                            dos.writeUTF("!REMOVED BY SERVER!");
+
+                            //Close and Remove the DataOutputStream from the main Array List corresponding to this socket
+                            dos.close();
+                            writingStreams.remove(dos);                    
+
+                            //For Log
+                            System.out.println("Successfully removed client " + s.getInetAddress().getHostAddress() + " -> " + s.getInetAddress().getHostName());
+
+                            //Deleted Index
+                            deletedIndex = sockets.indexOf(s);
+
+                            //Now close and remove the Socket from the main Array List
+                            s.close();                    
+                            sockets.remove(s);
+
+                            //Decrement the value of client count
+                            --clientCount;
+
+                            //Update the List
+                            updateClientList(deletedIndex);
+
+                        }
+                        catch(Exception e)
+                        {
+                            e.printStackTrace();
+                            JOptionPane.showMessageDialog(rootPane, "Some error occurrred while removing the client","Y-NOT Editor Server Manager",JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 }
             }
+            
         }
         
         

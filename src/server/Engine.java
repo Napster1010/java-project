@@ -103,33 +103,34 @@ public class Engine extends javax.swing.JFrame {
         
         //Server
         ServerSocket server;
-        
-        try
-        {
-            server = new ServerSocket(port);            
-            JOptionPane.showMessageDialog(rootPane, "Server successfully started at PORT No. " + port + " on " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").format(new Date()), "Y-NOT Editor", JOptionPane.INFORMATION_MESSAGE);
-                
-            //Open the Server Manager form and pass the instance of the server manager to ClentConnectionListener
-            ServerManager serverManager = new ServerManager();
-            serverManager.initServerDetails(port,server);
-            serverManager.setVisible(true);
 
-            ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
-            Thread thread = new Thread(connection);    
-            //Add the current thread to the Thread array list in ActiveClientsInfo
-            ActiveClientsInfo info = new ActiveClientsInfo();
-            info.addThread(thread);
-            thread.start();            
-            
-            
-            this.dispose();
-        }
-        catch(Exception e)
-        {
-            Thread.currentThread().interrupt();
-            e.printStackTrace();
-        }                
-        
+        int dialogResponse = JOptionPane.showConfirmDialog(rootPane, "Are you sure you want to start the server at port " + port,"Y-NOT Editor Server Engine",JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+        if(dialogResponse==JOptionPane.YES_OPTION)
+        {        
+            try
+            {
+                server = new ServerSocket(port);            
+                JOptionPane.showMessageDialog(rootPane, "Server successfully started at PORT No. " + port + " on " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss a").format(new Date()), "Y-NOT Editor", JOptionPane.INFORMATION_MESSAGE);
+
+                //Open the Server Manager form and pass the instance of the server manager to ClentConnectionListener
+                ServerManager serverManager = new ServerManager();
+                serverManager.initServerDetails(port,server);
+                serverManager.setVisible(true);
+
+                ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
+                Thread thread = new Thread(connection);    
+                //Add the current thread to the Thread array list in ActiveClientsInfo
+                ActiveClientsInfo info = new ActiveClientsInfo();
+                info.addThread(thread);
+                thread.start();            
+                this.dispose();
+            }
+            catch(Exception e)
+            {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }                
+        }    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

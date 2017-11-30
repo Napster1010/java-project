@@ -154,7 +154,8 @@ public class ClientLogin extends javax.swing.JFrame {
             if(serverResponse.equals("Login successful"))
             {
                 JOptionPane.showMessageDialog(rootPane, "Login Successful. Welcome to Y-NOT Text Editor", "Y-NOT Editor Client Login", JOptionPane.INFORMATION_MESSAGE);
-                
+                new ClientMain().setVisible(true);
+                this.dispose();
             }
             else
             {
