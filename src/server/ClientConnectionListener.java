@@ -49,7 +49,7 @@ public class ClientConnectionListener implements Runnable {
             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream()); //Output Stream
             
             String userPass = inputStream.readUTF();
-            
+            System.out.println("Server received " + userPass);
             if(password.equals(userPass))
             {
                 outputStream.writeUTF("Login successful");
