@@ -146,6 +146,11 @@ public class ClientLogin extends javax.swing.JFrame {
             DataInputStream dis = new DataInputStream(socket.getInputStream());//InputStream
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());//OutputStream  
             
+            //Put the details of the client connection in ClientConnectionInfo
+            ClientConnectionInfo.socket = socket;
+            ClientConnectionInfo.inputStream = dis;
+            ClientConnectionInfo.outputStream = dos;
+            
             //Send the password to server for authentication and get the response
             dos.writeUTF(password);
             System.out.println("Client sent " + password);
