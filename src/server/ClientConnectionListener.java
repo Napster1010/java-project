@@ -63,7 +63,9 @@ public class ClientConnectionListener implements Runnable {
                 
                 //Start another thread which listens for a client connection
                 ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
-                Thread thread = new Thread(connection);    
+                Thread thread = new Thread(connection);   
+                //Add new thread to the Thread ArrayList in ActiveClientsInfo 
+                info.addThread(thread);
                 thread.start();
                 
                 

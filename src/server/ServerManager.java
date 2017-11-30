@@ -242,6 +242,7 @@ public class ServerManager extends javax.swing.JFrame {
         ActiveClientsInfo info = new ActiveClientsInfo();
         ArrayList<Socket> sockets = info.getClientConnections();
         ArrayList<DataOutputStream> writingStreams = info.getWritingStreams();
+        ArrayList<Thread> activeThreads = info.getActiveClientThreads();
         DataOutputStream dos=null;
         if(deleteHost.equals(""))
         {
@@ -256,17 +257,26 @@ public class ServerManager extends javax.swing.JFrame {
                 {
                     System.out.println();
                     try
-                    {                        
+                    {       
+                                                                        
+                        //Remove the Thread corresponding to the socket connection
+                        for(Thread thread:activeThreads)
+                        {
+                            if(thread.equals(activeThreads.get(sockets.indexOf(s))))
+                            {
+                                System.out.println("Found the thread");
+                                thread.interrupt();
+                            }                                                                                    
+                        }                                                                       
+                        
+                        //Remove the DataOutputStream corresponding to the socket
                         for(DataOutputStream d: writingStreams)
                         {                            
-                            System.out.println(d.toString());
                             if(d.equals(writingStreams.get(sockets.indexOf(s))))
                             {
-                                System.out.println("GOT IT");
                                 dos = d;
                             }
                         }
-                        
                         //Send a goodbye message to the client
                         dos.writeUTF("!REMOVED BY SERVER!");
 
@@ -276,7 +286,7 @@ public class ServerManager extends javax.swing.JFrame {
 
                         //For Log
                         System.out.println("Successfully removed client " + s.getInetAddress().getHostAddress() + " -> " + s.getInetAddress().getHostName());
-                        
+
                         //Deleted Index
                         deletedIndex = sockets.indexOf(s);
                         

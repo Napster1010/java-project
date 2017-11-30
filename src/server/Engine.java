@@ -116,7 +116,10 @@ public class Engine extends javax.swing.JFrame {
 
             ClientConnectionListener connection = new ClientConnectionListener(server, password, serverManager);
             Thread thread = new Thread(connection);    
-            thread.start();
+            //Add the current thread to the Thread array list in ActiveClientsInfo
+            ActiveClientsInfo info = new ActiveClientsInfo();
+            info.addThread(thread);
+            thread.start();            
             
             
             this.dispose();
