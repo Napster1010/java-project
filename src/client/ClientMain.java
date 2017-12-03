@@ -121,7 +121,8 @@ public class ClientMain extends javax.swing.JFrame {
 
     private void itmNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmNewActionPerformed
 
-        
+            new ClientEditor().setVisible(true);
+            this.setVisible(false);        
         
     }//GEN-LAST:event_itmNewActionPerformed
 

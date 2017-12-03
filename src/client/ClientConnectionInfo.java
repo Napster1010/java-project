@@ -13,7 +13,7 @@ import java.net.Socket;
  *
  * @author Napster
  */
-//This class is to keep the connection information of the client
+//This class is used to keep the connection information of the client
 public class ClientConnectionInfo {
     static Socket socket;
     static DataOutputStream outputStream;

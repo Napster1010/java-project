@@ -302,9 +302,6 @@ public class ServerManager extends javax.swing.JFrame {
                             s.close();                    
                             sockets.remove(s);
 
-                            //Decrement the value of client count
-                            --clientCount;
-
                             //Update the List
                             updateClientList(deletedIndex);
 
@@ -386,6 +383,9 @@ public class ServerManager extends javax.swing.JFrame {
     
     public void updateClientList(int deletedIndex)
     {
+        //Decrement the value of client count
+        --clientCount;
+
         //Update the number of active clients
         lblClientCount.setText(String.valueOf(clientCount));
         

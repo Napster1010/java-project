@@ -78,11 +78,14 @@ public class ClientConnectionListener implements Runnable {
 
                     if(!(input.startsWith("!DELETE!")))
                         pos = inputStream.readInt();
-
-                    if(input.equals("~"))
-                        break;
-                    else
+                    
+                    if(input.equals("!LOGGING OUT!"))
                     {
+                        //Remove the particular socket connection                        
+                        serverManager.updateClientList(info.getClientConnections().indexOf(socket));
+                        socket.close();
+                    }
+
                         for(DataOutputStream d: info.getWritingStreams())
                         {
                             if(d!=outputStream)
@@ -92,7 +95,6 @@ public class ClientConnectionListener implements Runnable {
                                     d.writeInt(pos);
                             }
                         }
-                    }
                 }                                        
             }
             else
