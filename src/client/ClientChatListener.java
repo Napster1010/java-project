@@ -15,13 +15,13 @@ public class ClientChatListener implements Runnable{
 
     Socket socket;
     DataInputStream inputStream;
-    JTextPane txtChatBox;
+    ChatMessenger messenger;
     
-    public ClientChatListener(Socket socket, DataInputStream inputStream, JTextPane txtChatBox)
+    public ClientChatListener(Socket socket, DataInputStream inputStream, ChatMessenger messenger)
     {
         this.socket = socket;
         this.inputStream = inputStream;
-        this.txtChatBox = txtChatBox;
+        this.messenger = messenger;
     }
     
     public void run()
@@ -29,10 +29,7 @@ public class ClientChatListener implements Runnable{
         String message;
         String recipient;
         try
-        {
-            StyledDocument document = txtChatBox.getStyledDocument();                                       
-            Style style = txtChatBox.addStyle("style", null);            
-            
+        {            
             while(true)
             {
                 message = inputStream.readUTF();
@@ -40,13 +37,8 @@ public class ClientChatListener implements Runnable{
                 {
                     recipient = inputStream.readUTF();
 
-                    //Display the recipient
-                    StyleConstants.setForeground(style, Color.red);
-                    document.insertString(txtChatBox.getCaretPosition(), recipient + ":\n", style);
-
-                    //Display the message
-                    StyleConstants.setForeground(style, Color.blue);
-                    document.insertString(txtChatBox.getCaretPosition(), message + "\n\n", style);
+                    //Write the contents to the TextPane
+                    messenger.writeText(recipient, message.substring(11));                    
                 }
             }
         }

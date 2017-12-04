@@ -63,7 +63,7 @@ public class ClientConnectionListener implements Runnable {
                 
                 
                 //Server side dispatching logic
-                String input,message,recipient;
+                String input,recipient;
                 int pos=0;                                
                 
                 while(true)

@@ -34,6 +34,7 @@ public class ChatMessenger extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Y-NOT Chat Messenger");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
@@ -44,6 +45,7 @@ public class ChatMessenger extends javax.swing.JFrame {
 
         txtChatBox.setEditable(false);
         txtChatBox.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 255, 204), 2));
+        txtChatBox.setText(" ");
         jScrollPane1.setViewportView(txtChatBox);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -145,11 +147,11 @@ public class ChatMessenger extends javax.swing.JFrame {
         {
             //Display the recipient
             StyleConstants.setForeground(style, Color.red);
-            document.insertString(txtChatBox.getCaretPosition(), ClientConnectionInfo.clientName + ":\n", style);
+            document.insertString(txtChatBox.getText().length() - 1, ClientConnectionInfo.clientName + ":\n", style);
 
             //Display the message
             StyleConstants.setForeground(style, Color.blue);
-            document.insertString(txtChatBox.getCaretPosition(), text + "\n\n", style);
+            document.insertString(txtChatBox.getText().length() - 1, text + "\n\n", style);
             
             outputStream.writeUTF("!MESSENGER!" + text);
             outputStream.writeUTF(ClientConnectionInfo.clientName);
@@ -159,6 +161,7 @@ public class ChatMessenger extends javax.swing.JFrame {
         catch(Exception e)
         {
             JOptionPane.showMessageDialog(rootPane, "Couldn't send the message","Y-NOT Chat Messenger",JOptionPane.ERROR_MESSAGE);  
+            e.printStackTrace();
             txtText.setText("");
             jButton2.setEnabled(false);
         }
@@ -172,11 +175,32 @@ public class ChatMessenger extends javax.swing.JFrame {
         style = txtChatBox.addStyle("style", null);        
         
         //Start the thread for ClientChatListener
-        ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,txtChatBox);
+        ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,this);
         Thread thread = new Thread(chatListener);
         thread.start();
     }//GEN-LAST:event_formWindowOpened
 
+    public void writeText(String recipient, String message)
+    {
+        try
+        {
+            //Display the recipient
+            StyleConstants.setForeground(style, Color.red);
+            System.out.println(txtChatBox.getText().length());
+            txtChatBox.setCaretPosition(txtChatBox.getText().length());
+            document.insertString(txtChatBox.getText().length() - 1, recipient + ":\n", style);
+
+            //Display the message
+            StyleConstants.setForeground(style, Color.blue);
+            System.out.println(txtChatBox.getText().length());
+            document.insertString(txtChatBox.getText().length() - 1, message + "\n\n", style);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }        
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
