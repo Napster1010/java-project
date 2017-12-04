@@ -54,6 +54,11 @@ public class ClientMain extends javax.swing.JFrame {
         itmChat.setMnemonic('c');
         itmChat.setText("Chat");
         itmChat.setToolTipText("Chat with your group");
+        itmChat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itmChatActionPerformed(evt);
+            }
+        });
         mnuNavigator.add(itmChat);
 
         itmChat1.setMnemonic('e');
@@ -119,6 +124,13 @@ public class ClientMain extends javax.swing.JFrame {
             this.setVisible(false);        
         
     }//GEN-LAST:event_itmNewActionPerformed
+
+    private void itmChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmChatActionPerformed
+
+        new ChatMessenger().setVisible(true);
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_itmChatActionPerformed
 
     /**
      * @param args the command line arguments

@@ -39,6 +39,9 @@
                 <Property name="text" type="java.lang.String" value="Chat"/>
                 <Property name="toolTipText" type="java.lang.String" value="Chat with your group"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="itmChatActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="itmChat1">
               <Properties>
