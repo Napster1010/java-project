@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package client;
 
 import java.io.DataInputStream;
@@ -11,11 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 
-/**
- *
- * @author Napster
- */
-public class ClientListener implements Runnable{
+public class EditorClientListener implements Runnable{
     DataInputStream inputStream;
     JTextArea txtEditor;
     String read,deleteString;
@@ -23,7 +14,7 @@ public class ClientListener implements Runnable{
     int start,end;
     int pos;
     
-    public ClientListener(DataInputStream inputStream,JTextArea txtEditor,JRootPane rootPane)
+    public EditorClientListener(DataInputStream inputStream,JTextArea txtEditor,JRootPane rootPane)
     {
         this.inputStream = inputStream;
         this.txtEditor = txtEditor;
