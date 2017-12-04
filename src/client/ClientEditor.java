@@ -5,6 +5,7 @@
  */
 package client;
 
+import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -13,8 +14,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 
 /**
  *
@@ -27,6 +34,8 @@ public class ClientEditor extends javax.swing.JFrame {
     char inputChar;
     String previous,deletedText;
     int diff,start,end;
+    Highlighter highlighter;
+    
     /**
      * Creates new form ClientEditor
      */
@@ -73,6 +82,11 @@ public class ClientEditor extends javax.swing.JFrame {
         txtEditor.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         txtEditor.setForeground(new java.awt.Color(255, 255, 255));
         txtEditor.setRows(5);
+        txtEditor.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtEditorMouseClicked(evt);
+            }
+        });
         txtEditor.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtEditorKeyReleased(evt);
@@ -110,6 +124,11 @@ public class ClientEditor extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jButton1.setText("SEARCH");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -360,6 +379,92 @@ public class ClientEditor extends javax.swing.JFrame {
         this.dispose();
         
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        String text = txtSearch.getText();
+        
+        if(text.equals(""))
+        {
+            JOptionPane.showMessageDialog(rootPane, "Text cannot be empty","Y-NOT Text Editor",JOptionPane.WARNING_MESSAGE);
+        }
+        else
+        {            
+            //Searches for the requested word in the editor
+            ArrayList<Integer> indexes = findOccurence(txtEditor.getText(), text);
+            
+            if(indexes.isEmpty())
+            {
+               JOptionPane.showMessageDialog(rootPane, "No matches for the word found","Y-NOT Text Editor",JOptionPane.ERROR_MESSAGE);
+            }
+            else
+            {
+                //Highlights the searched text in the editor
+                for(int index: indexes)
+                {                        
+                    highlighter = txtEditor.getHighlighter();
+                    Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(Color.GRAY);
+                    int p0 = index;
+                    int p1 = p0 + text.length();
+
+                    try 
+                    {
+                        highlighter.addHighlight(p0, p1, painter);                
+                    }
+                    catch (BadLocationException ex) 
+                    {
+                        ex.printStackTrace();
+                    }
+
+                }
+ 
+                //Show the number of matches
+                JOptionPane.showMessageDialog(rootPane, indexes.size() + " match(es) for the word found","Y-NOT Text Editor",JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void txtEditorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtEditorMouseClicked
+        
+        //Remove the current Highlighter if any
+        highlighter.removeAllHighlights();
+        
+    }//GEN-LAST:event_txtEditorMouseClicked
+
+    //Computes prefix array for the KMP Algorithm
+    int[] prefix(String str){
+	int N = str.length();
+	int border = 0;
+	int prefix[] = new int[N];
+ 
+	for(int i=1;i<N;i++){
+ 
+		while(border != 0 && str.charAt(border) != str.charAt(i))
+			border = prefix[border - 1];
+ 
+		if(str.charAt(border) == str.charAt(i))
+			prefix[i] = ++border;
+ 
+	}
+ 
+	return prefix;
+    }
+ 
+    //Finds the occurence of the word and returns the starting indexes
+    ArrayList<Integer> findOccurence(String text , String pattern) {
+	int patLen = pattern.length();
+	int textLen = text.length();
+	int prefix[] = prefix(pattern.concat("$").concat(text));
+	ArrayList<Integer> pos = new ArrayList<>();
+	for(int i=0;i<textLen;i++){
+		int j = i + patLen + 1;
+		if(prefix[j] == patLen)
+			pos.add((j - (2 * patLen)));
+        }
+ 
+    	return pos;
+    }
 
     /**
      * @param args the command line arguments
