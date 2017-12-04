@@ -154,8 +154,10 @@ public class ChatMessenger extends javax.swing.JFrame {
         this.socket = ClientConnectionInfo.socket;
         this.outputStream = ClientConnectionInfo.outputStream;        
         
+        //Start the thread for ClientChatListener
         ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,txtChatBox);
-
+        Thread thread = new Thread(chatListener);
+        thread.start();
     }//GEN-LAST:event_formWindowOpened
 
     public static void main(String args[]) {
