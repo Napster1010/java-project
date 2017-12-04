@@ -1,14 +1,14 @@
 package client;
 
-import java.awt.Color;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+import javax.swing.JOptionPane;
+
 
 public class ChatMessenger extends javax.swing.JFrame {
+    Socket socket;
+    DataOutputStream outputStream;        
 
     public ChatMessenger() {
         initComponents();
@@ -133,11 +133,28 @@ public class ChatMessenger extends javax.swing.JFrame {
     }//GEN-LAST:event_txtTextKeyReleased
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        String text = txtText.getText();
+        try
+        {
+            outputStream.writeUTF("!MESSENGER!" + text);
+            outputStream.writeUTF(ClientConnectionInfo.clientName);
+            txtText.setText("");
+            jButton2.setEnabled(false);
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(rootPane, "Couldn't send the message","Y-NOT Chat Messenger",JOptionPane.ERROR_MESSAGE);  
+            txtText.setText("");
+            jButton2.setEnabled(false);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
 
+        this.socket = ClientConnectionInfo.socket;
+        this.outputStream = ClientConnectionInfo.outputStream;        
         
+        ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,txtChatBox);
 
     }//GEN-LAST:event_formWindowOpened
 

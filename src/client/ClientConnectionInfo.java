@@ -8,4 +8,5 @@ public class ClientConnectionInfo {
     static Socket socket;
     static DataOutputStream outputStream;
     static DataInputStream inputStream;
+    static String clientName;
 }

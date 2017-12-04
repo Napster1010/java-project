@@ -43,11 +43,13 @@ public class ClientConnectionListener implements Runnable {
             System.out.println("Server received " + userPass);
             if(password.equals(userPass))
             {
+                String clientName = inputStream.readUTF();
                 outputStream.writeUTF("Login successful");
+                
                 
                 //Add the client to the list of Active Clients
                 ActiveClientsInfo info = new ActiveClientsInfo();
-                info.addClient(socket, outputStream);
+                info.addClient(socket, outputStream, inputStream, clientName);
                 
                 //Call the method of ServerManager which displays the infomration of the connected client on the form
                 serverManager.displayClient(socket);
@@ -61,18 +63,47 @@ public class ClientConnectionListener implements Runnable {
                 
                 
                 //Server side dispatching logic
-                String input;
-                int pos=0;
+                String input,message,recipient;
+                int pos=0;                                
+                
                 while(true)
                 {
                     input = inputStream.readUTF();
                     if(input.equals("!LOGGING OUT!"))
                     {
                         System.out.println("Got logout request from client");
-                        //Remove the particular socket connection                        
+                        
+                        //Remove the particular socket connection   
+                        info.getClientConnections().remove(socket);
+                        info.getWritingStreams().remove(outputStream);
+                        info.getClientNames().remove(clientName);
+                        info.getActiveClientThreads().remove(thread);
+                        
+                        //Update the details on server manager
                         serverManager.updateClientList(info.getClientConnections().indexOf(socket));
+                        outputStream.close();
+                        inputStream.close();
+                        thread.interrupt();                        
                         socket.close();
                         break;
+                    }
+                    else if(input.startsWith("!MESSENGER!"))
+                    {
+                        //Take out the message which was sent
+                        //Take out the recipient name
+                        recipient = inputStream.readUTF();
+
+                        //Give the message to every client
+                        for(DataOutputStream d: info.getWritingStreams())
+                        {
+                            if(d!=outputStream)
+                            {
+                                d.writeUTF(input);
+                                d.writeUTF(recipient);       
+                                System.out.println("Sent message (Chat messenger)");
+                            }
+                        }                                                
+                        
                     }
                     else if(input.equals("!OPENED FILE!"))
                     {

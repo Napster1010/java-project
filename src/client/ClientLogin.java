@@ -23,6 +23,8 @@ public class ClientLogin extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtPort = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtClientName = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Y-NOT Editor Client Login");
@@ -37,7 +39,7 @@ public class ClientLogin extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel2.setText("Password for Connection");
 
-        txtPass.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtPass.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jButton1.setForeground(new java.awt.Color(0, 153, 0));
@@ -51,7 +53,12 @@ public class ClientLogin extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel3.setText("Port Number");
 
-        txtPort.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        txtPort.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel4.setText("Client Name");
+
+        txtClientName.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -63,17 +70,20 @@ public class ClientLogin extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtIP))
+                        .addComponent(txtIP, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(78, 78, 78)
                         .addComponent(txtPort))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
-                            .addComponent(txtPass))))
+                            .addComponent(txtPass)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtClientName, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -87,13 +97,17 @@ public class ClientLogin extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtPort, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
-                .addGap(22, 22, 22)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtClientName, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtPass, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(7, 7, 7))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -123,16 +137,12 @@ public class ClientLogin extends javax.swing.JFrame {
             String ip = txtIP.getText();
             int port = Integer.parseInt(txtPort.getText());
             String password = new String(txtPass.getPassword());
+            String clientName = txtClientName.getText();
                         
             
             Socket socket = new Socket(ip, port);            
             DataInputStream dis = new DataInputStream(socket.getInputStream());//InputStream
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());//OutputStream  
-            
-            //Put the details of the client connection in ClientConnectionInfo
-            ClientConnectionInfo.socket = socket;
-            ClientConnectionInfo.inputStream = dis;
-            ClientConnectionInfo.outputStream = dos;
             
             //Send the password to server for authentication and get the response
             dos.writeUTF(password);
@@ -141,6 +151,13 @@ public class ClientLogin extends javax.swing.JFrame {
             System.out.println("Server responded " +serverResponse);
             if(serverResponse.equals("Login successful"))
             {
+                //Put the details of the client connection in ClientConnectionInfo
+                ClientConnectionInfo.socket = socket;
+                ClientConnectionInfo.inputStream = dis;
+                ClientConnectionInfo.outputStream = dos;
+                ClientConnectionInfo.clientName = clientName;
+            
+                dos.writeUTF(clientName);
                 JOptionPane.showMessageDialog(rootPane, "Login Successful. Welcome to Y-NOT Text Editor", "Y-NOT Editor Client Login", JOptionPane.INFORMATION_MESSAGE);
                 new ClientMain().setVisible(true);
                 this.dispose();
@@ -206,7 +223,9 @@ public class ClientLogin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField txtClientName;
     private javax.swing.JTextField txtIP;
     private javax.swing.JPasswordField txtPass;
     private javax.swing.JTextField txtPort;

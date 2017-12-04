@@ -6,7 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.JTextArea;
 
-public class EditorClientListener implements Runnable{
+public class ClientEditorListener implements Runnable{
     DataInputStream inputStream;
     JTextArea txtEditor;
     String read,deleteString;
@@ -14,7 +14,7 @@ public class EditorClientListener implements Runnable{
     int start,end;
     int pos;
     
-    public EditorClientListener(DataInputStream inputStream,JTextArea txtEditor,JRootPane rootPane)
+    public ClientEditorListener(DataInputStream inputStream,JTextArea txtEditor,JRootPane rootPane)
     {
         this.inputStream = inputStream;
         this.txtEditor = txtEditor;
@@ -34,13 +34,15 @@ public class EditorClientListener implements Runnable{
                 {
                     JOptionPane.showMessageDialog(rootPane,"You were kicked out of the editor by server!","Y-NOT Text Editor",JOptionPane.ERROR_MESSAGE);
                     break;
-                }
+                }                
                 else if(read.equals("!OPENED FILE!"))
                 {
                     System.out.println("Client Opening file");
                     String newText = inputStream.readUTF();
                     txtEditor.setText(newText);
                 }
+                else if(read.startsWith("!MESSENGER!"))
+                {}
                 else
                 {
                     if(read.startsWith("!DELETE!"))

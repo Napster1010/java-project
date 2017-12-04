@@ -264,7 +264,7 @@ public class ClientEditor extends javax.swing.JFrame {
             this.outputStream = ClientConnectionInfo.outputStream;            
             
             //Start a new Thread which will retrieve data from the server
-            EditorClientListener listener = new EditorClientListener(ClientConnectionInfo.inputStream,txtEditor,rootPane);
+            ClientEditorListener listener = new ClientEditorListener(ClientConnectionInfo.inputStream,txtEditor,rootPane);
             Thread thread = new Thread(listener);
             thread.start();
                         

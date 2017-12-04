@@ -1,5 +1,6 @@
 package server;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -241,8 +242,11 @@ public class ServerManager extends javax.swing.JFrame {
             ActiveClientsInfo info = new ActiveClientsInfo();
             ArrayList<Socket> sockets = info.getClientConnections();
             ArrayList<DataOutputStream> writingStreams = info.getWritingStreams();
+            ArrayList<DataInputStream> inputStreams = info.getInputStreams();
+            ArrayList<String> clientNames = info.getClientNames();
             ArrayList<Thread> activeThreads = info.getActiveClientThreads();
-            DataOutputStream dos=null;
+            DataOutputStream dos = null;
+            DataInputStream dis = null;
             if(deleteHost.equals(""))
             {
                 JOptionPane.showMessageDialog(rootPane, "Please select a Client which has to be removed","Y-NOT Editor Server Manager",JOptionPane.ERROR_MESSAGE);            
@@ -276,8 +280,31 @@ public class ServerManager extends javax.swing.JFrame {
                                     dos = d;
                                 }
                             }
+
+                            //Remove the DataInputStream corresponding to the socket
+                            for(DataInputStream in: inputStreams)
+                            {                            
+                                if(in.equals(inputStreams.get(sockets.indexOf(s))))
+                                {
+                                    dis = in;
+                                }
+                            }
+
+                            //Remove the client name corresponding to the socket
+                            for(String name: clientNames)
+                            {                            
+                                if(name.equals(clientNames.get(sockets.indexOf(s))))
+                                {
+                                    clientNames.remove(name);
+                                }
+                            }
+                            
                             //Send a goodbye message to the client
                             dos.writeUTF("!REMOVED BY SERVER!");
+
+                            //Close and Remove the DataInputStream from the main Array List corresponding to this socket
+                            dis.close();
+                            inputStreams.remove(dis);
 
                             //Close and Remove the DataOutputStream from the main Array List corresponding to this socket
                             dos.close();
