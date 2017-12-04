@@ -42,11 +42,11 @@ public class ClientChatListener implements Runnable{
 
                     //Display the recipient
                     StyleConstants.setForeground(style, Color.red);
-                    document.insertString(txtChatBox.getCaretPosition(), recipient + "\n", style);
+                    document.insertString(txtChatBox.getCaretPosition(), recipient + ":\n", style);
 
                     //Display the message
                     StyleConstants.setForeground(style, Color.blue);
-                    document.insertString(txtChatBox.getCaretPosition(), message + "\n", style);
+                    document.insertString(txtChatBox.getCaretPosition(), message + "\n\n", style);
                 }
             }
         }

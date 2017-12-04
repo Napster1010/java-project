@@ -43,8 +43,8 @@ public class ClientConnectionListener implements Runnable {
             System.out.println("Server received " + userPass);
             if(password.equals(userPass))
             {
-                String clientName = inputStream.readUTF();
                 outputStream.writeUTF("Login successful");
+                String clientName = inputStream.readUTF();
                 
                 
                 //Add the client to the list of Active Clients

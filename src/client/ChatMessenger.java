@@ -1,14 +1,21 @@
 package client;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import javax.swing.JOptionPane;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 
 public class ChatMessenger extends javax.swing.JFrame {
     Socket socket;
     DataOutputStream outputStream;        
+    StyledDocument document;
+    Style style;
+    
 
     public ChatMessenger() {
         initComponents();
@@ -136,6 +143,14 @@ public class ChatMessenger extends javax.swing.JFrame {
         String text = txtText.getText();
         try
         {
+            //Display the recipient
+            StyleConstants.setForeground(style, Color.red);
+            document.insertString(txtChatBox.getCaretPosition(), ClientConnectionInfo.clientName + ":\n", style);
+
+            //Display the message
+            StyleConstants.setForeground(style, Color.blue);
+            document.insertString(txtChatBox.getCaretPosition(), text + "\n\n", style);
+            
             outputStream.writeUTF("!MESSENGER!" + text);
             outputStream.writeUTF(ClientConnectionInfo.clientName);
             txtText.setText("");
@@ -153,6 +168,8 @@ public class ChatMessenger extends javax.swing.JFrame {
 
         this.socket = ClientConnectionInfo.socket;
         this.outputStream = ClientConnectionInfo.outputStream;        
+        document = txtChatBox.getStyledDocument();      
+        style = txtChatBox.addStyle("style", null);        
         
         //Start the thread for ClientChatListener
         ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,txtChatBox);
