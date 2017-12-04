@@ -39,18 +39,21 @@ public class ClientListener implements Runnable{
             {
                 read = inputStream.readUTF();
                 
-                if(!(read.startsWith("!DELETE!")))
-                    pos = inputStream.readInt();
-                
                 if(read.equals("!REMOVED BY SERVER!"))
                 {
                     JOptionPane.showMessageDialog(rootPane,"You were kicked out of the editor by server!","Y-NOT Text Editor",JOptionPane.ERROR_MESSAGE);
                     break;
                 }
-                
+                else if(read.equals("!OPENED FILE!"))
+                {
+                    System.out.println("Client Opening file");
+                    String newText = inputStream.readUTF();
+                    txtEditor.setText(newText);
+                }
+                else
+                {
                     if(read.startsWith("!DELETE!"))
                     {
-                        System.out.println(read);
                         deleteString = read.substring(8);
                         StringTokenizer split = new StringTokenizer(deleteString, "!");
                         start = Integer.parseInt(split.nextToken());
@@ -59,10 +62,11 @@ public class ClientListener implements Runnable{
                     }
                     else
                     {
-                        System.out.print(pos);
+                        pos = inputStream.readInt();                
                         prev = txtEditor.getCaretPosition();
                         txtEditor.insert(read, pos);                        
                     }                
+                }    
             }
             catch(Exception e)
             {

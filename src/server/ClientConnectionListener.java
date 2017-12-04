@@ -75,17 +75,35 @@ public class ClientConnectionListener implements Runnable {
                 while(true)
                 {
                     input = inputStream.readUTF();
-
-                    if(!(input.startsWith("!DELETE!")))
-                        pos = inputStream.readInt();
-                    
                     if(input.equals("!LOGGING OUT!"))
                     {
+                        System.out.println("Got logout request from client");
                         //Remove the particular socket connection                        
                         serverManager.updateClientList(info.getClientConnections().indexOf(socket));
                         socket.close();
+                        break;
                     }
-
+                    else if(input.equals("!OPENED FILE!"))
+                    {
+                        System.out.println("Server Opening File");
+                        //Read the new Text
+                        String newText = inputStream.readUTF();
+                        System.out.println("Sending " + newText);
+                        for(DataOutputStream d: info.getWritingStreams())
+                        {
+                            if(d!=outputStream)
+                            {
+                                d.writeUTF("!OPENED FILE!");
+                                d.writeUTF(newText);       
+                                System.out.println("Sent file text");
+                            }
+                        }                                                
+                    }
+                    else
+                    {
+                        if(!(input.startsWith("!DELETE!")))
+                            pos = inputStream.readInt();
+                        
                         for(DataOutputStream d: info.getWritingStreams())
                         {
                             if(d!=outputStream)
@@ -94,7 +112,8 @@ public class ClientConnectionListener implements Runnable {
                                 if(!(input.startsWith("!DELETE!")))
                                     d.writeInt(pos);
                             }
-                        }
+                        }                        
+                    }                                        
                 }                                        
             }
             else

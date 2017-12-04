@@ -6,8 +6,11 @@
 package client;
 
 import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.net.Socket;
 import javax.swing.JFileChooser;
@@ -218,6 +221,40 @@ public class ClientEditor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    //Function which will be called when someone chooses open file option
+    public void openFile(File file)
+    {
+        this.socket = ClientConnectionInfo.socket;
+        this.outputStream = ClientConnectionInfo.outputStream;            
+        BufferedReader reader=null;
+        try
+        {
+            txtEditor.setText("");
+            reader = new BufferedReader(new FileReader(file));
+            String line;
+            line = reader.readLine();
+            while(line!=null)
+            {
+                txtEditor.append(line);
+                line = reader.readLine();
+            }            
+            
+            //Reflect the change in everyone's editor
+            String newText = txtEditor.getText();
+            System.out.println("Opening File request sent From Editor");
+            outputStream.writeUTF("!OPENED FILE!");
+            outputStream.writeUTF(newText);
+            
+            reader.close();
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(rootPane, "Couldn't Open the requested file","Y-NOT TextEditor",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+        
+    }
+    
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         try
         {

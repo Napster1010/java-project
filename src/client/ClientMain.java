@@ -5,6 +5,7 @@
  */
 package client;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 /**
@@ -111,7 +112,17 @@ public class ClientMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void itmOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmOpenActionPerformed
-        // TODO add your handling code here:
+
+        JFileChooser opener = new JFileChooser();
+        int response = opener.showOpenDialog(rootPane);
+        if(response==JFileChooser.OPEN_DIALOG)
+        {
+            System.out.println("Opening file! From MDI");
+            ClientEditor editor = new ClientEditor();
+            editor.setVisible(true);
+            editor.openFile(opener.getSelectedFile());
+        }
+        
     }//GEN-LAST:event_itmOpenActionPerformed
 
     private void itmChat1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmChat1ActionPerformed
