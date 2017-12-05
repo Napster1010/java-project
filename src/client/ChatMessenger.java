@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -15,7 +18,8 @@ public class ChatMessenger extends javax.swing.JFrame {
     DataOutputStream outputStream;        
     StyledDocument document;
     Style style;
-    
+    Style styleDate;
+    JScrollBar vertical;
 
     public ChatMessenger() {
         initComponents();
@@ -45,6 +49,7 @@ public class ChatMessenger extends javax.swing.JFrame {
 
         txtChatBox.setEditable(false);
         txtChatBox.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(204, 255, 204), 2));
+        txtChatBox.setFont(new java.awt.Font("Comic Sans MS", 0, 15)); // NOI18N
         txtChatBox.setText(" ");
         jScrollPane1.setViewportView(txtChatBox);
 
@@ -147,11 +152,18 @@ public class ChatMessenger extends javax.swing.JFrame {
         {
             //Display the recipient
             StyleConstants.setForeground(style, Color.red);
-            document.insertString(txtChatBox.getText().length() - 1, ClientConnectionInfo.clientName + ":\n", style);
+            document.insertString(document.getLength() - 1, ClientConnectionInfo.clientName + ":\t", style);
+
+            //Display the time
+            StyleConstants.setForeground(style, Color.gray);
+            document.insertString(document.getLength() - 1, new SimpleDateFormat("HH:mm:ss").format(new Date()) + "\n", style);
 
             //Display the message
             StyleConstants.setForeground(style, Color.blue);
-            document.insertString(txtChatBox.getText().length() - 1, text + "\n\n", style);
+            document.insertString(document.getLength() - 1, text + "\n\n", style);
+
+            //scroll to the bottom
+            vertical.setValue(vertical.getMaximum());
             
             outputStream.writeUTF("!MESSENGER!" + text);
             outputStream.writeUTF(ClientConnectionInfo.clientName);
@@ -172,7 +184,11 @@ public class ChatMessenger extends javax.swing.JFrame {
         this.socket = ClientConnectionInfo.socket;
         this.outputStream = ClientConnectionInfo.outputStream;        
         document = txtChatBox.getStyledDocument();      
-        style = txtChatBox.addStyle("style", null);        
+        style = txtChatBox.addStyle("style", null);  
+        styleDate = txtChatBox.addStyle("styleDate", null);
+        
+        //Scroll Bar
+        vertical = jScrollPane1.getVerticalScrollBar();
         
         //Start the thread for ClientChatListener
         ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,this);
@@ -186,14 +202,20 @@ public class ChatMessenger extends javax.swing.JFrame {
         {
             //Display the recipient
             StyleConstants.setForeground(style, Color.red);
-            System.out.println(txtChatBox.getText().length());
-            txtChatBox.setCaretPosition(txtChatBox.getText().length());
-            document.insertString(txtChatBox.getText().length() - 1, recipient + ":\n", style);
+            document.insertString(document.getLength() - 1, recipient + ":\t", style);
+            
+
+            //Display the time
+            StyleConstants.setForeground(style, Color.gray);
+            document.insertString(document.getLength() - 1, new SimpleDateFormat("HH:mm:ss").format(new Date()) + "\n", style);
 
             //Display the message
             StyleConstants.setForeground(style, Color.blue);
-            System.out.println(txtChatBox.getText().length());
-            document.insertString(txtChatBox.getText().length() - 1, message + "\n\n", style);
+            document.insertString(document.getLength() - 1, message + "\n\n", style);
+
+            //scroll to the bottom
+            vertical.setValue(vertical.getMaximum());
+
         }
         catch(Exception e)
         {
