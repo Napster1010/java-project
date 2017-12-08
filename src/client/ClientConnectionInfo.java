@@ -9,4 +9,6 @@ public class ClientConnectionInfo {
     static DataOutputStream outputStream;
     static DataInputStream inputStream;
     static String clientName;
+    static ChatMessenger chatMessenger;
+    static ClientEditor clientEditor;
 }

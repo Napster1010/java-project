@@ -20,9 +20,13 @@ public class ChatMessenger extends javax.swing.JFrame {
     Style style;
     Style styleDate;
     JScrollBar vertical;
-
+    Thread thread;
+    
     public ChatMessenger() {
         initComponents();
+        pack();
+        setLocationRelativeTo(null);
+        rootPane.setDefaultButton(jButton2);
     }
 
     @SuppressWarnings("unchecked")
@@ -37,9 +41,12 @@ public class ChatMessenger extends javax.swing.JFrame {
         txtText = new javax.swing.JTextArea();
         jButton2 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Y-NOT Chat Messenger");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -192,9 +199,13 @@ public class ChatMessenger extends javax.swing.JFrame {
         
         //Start the thread for ClientChatListener
         ClientChatListener chatListener = new ClientChatListener(socket,ClientConnectionInfo.inputStream,this);
-        Thread thread = new Thread(chatListener);
+        thread = new Thread(chatListener);
         thread.start();
     }//GEN-LAST:event_formWindowOpened
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        thread.interrupt();
+    }//GEN-LAST:event_formWindowClosed
 
     public void writeText(String recipient, String message)
     {

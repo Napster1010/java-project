@@ -2,13 +2,15 @@ package client;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class ClientMain extends javax.swing.JFrame {
 
     public ClientMain() {
         initComponents();
         setTitle("Y-NOT Text Editor and Chat Messenger");
-        
+        pack();
+        setLocationRelativeTo(null);        
     }
 
     @SuppressWarnings("unchecked")
@@ -106,29 +108,61 @@ public class ClientMain extends javax.swing.JFrame {
         if(response==JFileChooser.OPEN_DIALOG)
         {
             System.out.println("Opening file! From MDI");
-            ClientEditor editor = new ClientEditor();
-            editor.setVisible(true);
-            editor.openFile(opener.getSelectedFile());
+            if(ClientConnectionInfo.clientEditor==null)
+            {
+                ClientConnectionInfo.clientEditor = new ClientEditor();
+                ClientConnectionInfo.clientEditor.setVisible(true);
+                ClientConnectionInfo.clientEditor.openFile(opener.getSelectedFile());
+            }
+            else
+            {
+                ClientConnectionInfo.clientEditor.setVisible(true);
+                ClientConnectionInfo.clientEditor.openFile(opener.getSelectedFile());                
+            }
         }
         
     }//GEN-LAST:event_itmOpenActionPerformed
 
     private void itmChat1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmChat1ActionPerformed
-        System.exit(0);
+
+        try
+        {
+            ClientConnectionInfo.outputStream.writeUTF("!LOGGING OUT!");
+            System.exit(0);        
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(rootPane, "Error occurred while exiting the application","Y-NOT Text Editor",JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     
     }//GEN-LAST:event_itmChat1ActionPerformed
 
     private void itmNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmNewActionPerformed
 
-            new ClientEditor().setVisible(true);
-            this.setVisible(false);        
+        if(ClientConnectionInfo.clientEditor==null)
+        {
+            ClientConnectionInfo.clientEditor = new ClientEditor();
+            ClientConnectionInfo.clientEditor.setVisible(true);
+        }
+        else
+        {
+            ClientConnectionInfo.clientEditor.setVisible(true);
+        }
         
     }//GEN-LAST:event_itmNewActionPerformed
 
     private void itmChatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itmChatActionPerformed
 
-        new ChatMessenger().setVisible(true);
-        this.setVisible(false);
+        if(ClientConnectionInfo.chatMessenger==null)
+        {
+            ClientConnectionInfo.chatMessenger = new ChatMessenger();
+            ClientConnectionInfo.chatMessenger.setVisible(true);
+        }
+        else
+        {
+            ClientConnectionInfo.chatMessenger.setVisible(true);
+        }
         
     }//GEN-LAST:event_itmChatActionPerformed
 

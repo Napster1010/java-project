@@ -36,6 +36,8 @@ public class ServerManager extends javax.swing.JFrame {
      */
     public ServerManager() {
         initComponents();
+        pack();
+        setLocationRelativeTo(null);
     }
 
     /**

@@ -9,6 +9,9 @@ public class Engine extends javax.swing.JFrame {
 
     public Engine() {
         initComponents();
+        pack();
+        setLocationRelativeTo(null);
+        rootPane.setDefaultButton(jButton1);
     }
 
     @SuppressWarnings("unchecked")

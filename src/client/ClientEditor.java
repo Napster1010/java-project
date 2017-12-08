@@ -26,9 +26,12 @@ public class ClientEditor extends javax.swing.JFrame {
     String previous,deletedText;
     int diff,start,end;
     Highlighter highlighter;
+    Thread thread;
     
     public ClientEditor() {
         initComponents();        
+        pack();
+        setLocationRelativeTo(null);
         TextLineNumber tl = new TextLineNumber(txtEditor);
         jScrollPane1.setRowHeaderView(tl);
     }
@@ -50,9 +53,13 @@ public class ClientEditor extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Y-NOT Text Editor Window");
+        setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -86,7 +93,7 @@ public class ClientEditor extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 791, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 816, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -105,7 +112,7 @@ public class ClientEditor extends javax.swing.JFrame {
         txtSearch.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
         txtSearch.setForeground(new java.awt.Color(255, 255, 255));
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jButton1.setText("SEARCH");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -142,6 +149,11 @@ public class ClientEditor extends javax.swing.JFrame {
 
         jButton2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButton2.setText("Chat Messenger");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setBackground(new java.awt.Color(0, 204, 0));
         jButton3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -152,7 +164,7 @@ public class ClientEditor extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jButton4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jButton4.setText("Back");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -181,7 +193,7 @@ public class ClientEditor extends javax.swing.JFrame {
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE))
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -265,7 +277,7 @@ public class ClientEditor extends javax.swing.JFrame {
             
             //Start a new Thread which will retrieve data from the server
             ClientEditorListener listener = new ClientEditorListener(ClientConnectionInfo.inputStream,txtEditor,rootPane);
-            Thread thread = new Thread(listener);
+            thread = new Thread(listener);
             thread.start();
                         
         }
@@ -358,8 +370,7 @@ public class ClientEditor extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
 
-        new ClientMain().setVisible(true);
-        this.dispose();
+        this.setVisible(false);
         
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -414,6 +425,24 @@ public class ClientEditor extends javax.swing.JFrame {
         highlighter.removeAllHighlights();
         
     }//GEN-LAST:event_txtEditorMouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        if(ClientConnectionInfo.chatMessenger==null)
+        {
+            ClientConnectionInfo.chatMessenger = new ChatMessenger();
+            ClientConnectionInfo.chatMessenger.setVisible(true);
+        }
+        else
+        {
+            ClientConnectionInfo.chatMessenger.setVisible(true);
+        }
+
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        thread.interrupt();        
+    }//GEN-LAST:event_formWindowClosed
 
     //Computes prefix array for the KMP Algorithm
     int[] prefix(String str){
